@@ -33,7 +33,8 @@ export const onboardingSchema = z.object({
     .int("Budget must be a whole number")
     .min(100, "Budget must be at least $100")
     .max(1000000, "Budget must be at most $1,000,000")
-    .optional(),
+    .optional()
+    .or(z.nan()),
 
   projectStartDate: z.string().refine((date) => {
     const selectedDate = new Date(date);
