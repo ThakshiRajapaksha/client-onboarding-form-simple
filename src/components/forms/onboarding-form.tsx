@@ -85,7 +85,7 @@ export const OnboardingForm: React.FC = () => {
         Client Onboarding Form
       </h1>
 
-      {/* Small Success Alert */}
+      {/* Success Alert */}
       {showSuccess && (
         <div className="mb-4 p-3 rounded-md bg-green-50 border border-green-200 text-green-800 text-sm">
           Successfully submitted the onboarding form!
