@@ -54,12 +54,29 @@ export const OnboardingForm: React.FC = () => {
 
     try {
       const result = await submitOnboardingForm(formData);
-      setSubmitResult(result);
 
       if (result.success) {
         reset();
         setShowSuccess(true);
+        // Filter out invalid budgetUsd
+        const filteredData = {
+          ...formData,
+          projectStartDate: new Date(formData.projectStartDate),
+        };
+        if (
+          typeof formData.budgetUsd !== "number" ||
+          isNaN(formData.budgetUsd)
+        ) {
+          delete filteredData.budgetUsd;
+        }
+        setSubmitResult({
+          success: true,
+          message: "Form submitted successfully!",
+          data: filteredData,
+        });
         setTimeout(() => setShowSuccess(false), 3000);
+      } else {
+        setSubmitResult(result);
       }
     } catch {
       setSubmitResult({
@@ -84,7 +101,7 @@ export const OnboardingForm: React.FC = () => {
 
       {/* Small Success Alert */}
       {showSuccess && (
-        <div className="mb-4 p-3 rounded-md bg-green-50 border border-green-200 text-green-800 text-sm">
+        <div className="mb-4 p-3 rounded-md success-message text-sm">
           Successfully submitted the onboarding form!
         </div>
       )}
@@ -93,9 +110,7 @@ export const OnboardingForm: React.FC = () => {
       {submitResult && !showSuccess && (
         <div
           className={`mb-6 p-4 rounded-md ${
-            submitResult.success
-              ? "bg-green-50 border border-green-200 text-green-800"
-              : "bg-red-50 border border-red-200 text-red-800"
+            submitResult.success ? "success-message" : "error-message"
           }`}
           role="alert"
         >
@@ -108,7 +123,9 @@ export const OnboardingForm: React.FC = () => {
               </p>
               <p>
                 <strong>Services:</strong>{" "}
-                {submitResult.data.services.join(", ")}
+                {Array.isArray(submitResult.data?.services)
+                  ? submitResult.data.services.join(", ")
+                  : "No services provided"}
               </p>
               {submitResult.data.budgetUsd && (
                 <p>

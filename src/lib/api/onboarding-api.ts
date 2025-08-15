@@ -1,4 +1,4 @@
-import { OnboardingFormData, ApiResponse } from "@/types/onboarding-data";
+import { ApiResponse, OnboardingFormData } from "@/types/onboarding-data";
 
 // Map HTTP status codes with user understandable messages
 const getErrorMessage = (status: number, errorText: string): string => {
@@ -59,7 +59,10 @@ export async function submitOnboardingForm(
   const endpoint = process.env.NEXT_PUBLIC_ONBOARD_URL;
 
   if (!endpoint) {
-    throw new Error("External API endpoint is not set");
+    return {
+      success: false,
+      message: "External API endpoint is not set",
+    };
   }
 
   // Handle the example.com placeholder endpoint
@@ -92,15 +95,9 @@ export async function submitOnboardingForm(
       throw new Error(getErrorMessage(res.status, errorText));
     }
 
-    const responseData = (await res.json()) as OnboardingFormData;
-
     return {
       success: true,
       message: "Form submitted successfully!",
-      data: {
-        ...responseData,
-        projectStartDate: new Date(responseData.projectStartDate),
-      },
     };
   } catch (err) {
     console.error("Onboarding form submission failed:", err);
