@@ -1,5 +1,58 @@
 import { OnboardingFormData, ApiResponse } from "@/types/onboarding-data";
 
+// Map HTTP status codes with user understandable messages
+const getErrorMessage = (status: number, errorText: string): string => {
+  try {
+    // Attempt to parse JSON error response
+    const errorData = JSON.parse(errorText);
+    const errorMessage = errorData.error || errorData.message || errorText;
+    switch (status) {
+      case 400:
+        return `Invalid form data submitted. ${
+          errorMessage
+            ? `Details: ${errorMessage}`
+            : "Please check your inputs and try again."
+        }`;
+      case 401:
+        return `Authentication failed. ${
+          errorMessage
+            ? `Details: ${errorMessage}`
+            : "Please try again or contact support."
+        }`;
+      case 403:
+        return `Access denied. ${
+          errorMessage
+            ? `Details: ${errorMessage}`
+            : "You don't have permission to submit this form."
+        }`;
+      case 429:
+        return `Too many requests. Please try again later.`;
+      case 500:
+        return `Server error. Please try again later or contact support.`;
+      default:
+        return `An error occurred: ${errorMessage || "Please try again."}`;
+    }
+  } catch {
+    // Fallback if response is not JSON type
+    switch (status) {
+      case 400:
+        return "Invalid form data submitted. Please check your inputs and try again.";
+      case 401:
+        return "Authentication failed. Please try again or contact support.";
+      case 403:
+        return "Access denied. You don't have permission to submit this form.";
+      case 429:
+        return "Too many requests. Please try again later.";
+      case 500:
+        return "Server error. Please try again later or contact support.";
+      default:
+        return `An unexpected error occurred: ${
+          errorText || "Please try again."
+        }`;
+    }
+  }
+};
+
 export async function submitOnboardingForm(
   data: unknown
 ): Promise<ApiResponse> {
@@ -13,13 +66,16 @@ export async function submitOnboardingForm(
   if (endpoint.includes("example.com")) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const formData = data as OnboardingFormData;
-
+    const { budgetUsd, ...restFormData } = formData;
     return {
       success: true,
       message: "Form submitted successfully!",
       data: {
-        ...formData,
+        ...restFormData,
         projectStartDate: new Date(formData.projectStartDate),
+        ...(typeof budgetUsd === "number" && !isNaN(budgetUsd)
+          ? { budgetUsd }
+          : {}),
       },
     };
   }
@@ -33,7 +89,7 @@ export async function submitOnboardingForm(
 
     if (!res.ok) {
       const errorText = await res.text();
-      throw new Error(`Request failed: ${res.status} ${errorText}`);
+      throw new Error(getErrorMessage(res.status, errorText));
     }
 
     const responseData = (await res.json()) as OnboardingFormData;
@@ -48,7 +104,6 @@ export async function submitOnboardingForm(
     };
   } catch (err) {
     console.error("Onboarding form submission failed:", err);
-
     return {
       success: false,
       message:
