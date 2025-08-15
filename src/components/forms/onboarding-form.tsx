@@ -8,19 +8,16 @@ import {
   OnboardingFormData,
   SERVICE_OPTIONS,
 } from "@/lib/validations/onboarding-schema";
-import {
-  submitOnboardingForm,
-  OnboardingApiResponse,
-} from "@/lib/api/onboarding-api";
+import { ApiResponse } from "@/types/onboarding-data";
 import Input from "@/components/ui/input";
 import Checkbox from "@/components/ui/checkbox";
 import Button from "@/components/ui/button";
 import { parseServicesFromQuery } from "@/lib/utils";
+import { submitOnboardingForm } from "@/lib/api/onboarding-api";
 
 export const OnboardingForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitResult, setSubmitResult] =
-    useState<OnboardingApiResponse | null>(null);
+  const [submitResult, setSubmitResult] = useState<ApiResponse | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const {
@@ -85,7 +82,7 @@ export const OnboardingForm: React.FC = () => {
         Client Onboarding Form
       </h1>
 
-      {/* Success Alert */}
+      {/* Small Success Alert */}
       {showSuccess && (
         <div className="mb-4 p-3 rounded-md bg-green-50 border border-green-200 text-green-800 text-sm">
           Successfully submitted the onboarding form!
