@@ -74,8 +74,8 @@ defaultValues: { services: [], acceptTerms: false },
   This fulfills the need to pre-fill through query params.
 
   ex:
-  http://localhost:3000/?service=UI%2FUX
-  http://localhost:3000/?service=UI%2FUX&service=Web%20Dev
+ -  http://localhost:3000/?service=UI%2FUX
+ -  http://localhost:3000/?service=UI%2FUX&service=Web%20Dev
 
 - Unit test cases: The onboarding-schema.test.ts has extensive tests of each and every field, both valid and not valid, edge cases as well as combinations.
 
