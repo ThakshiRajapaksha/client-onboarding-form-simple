@@ -73,6 +73,10 @@ defaultValues: { services: [], acceptTerms: false },
   The utilization of useEffect in onboarding-form.tsx is in setting values in the services field with valid values by the setValue.
   This fulfills the need to pre-fill through query params.
 
+  ex:
+  http://localhost:3000/?service=UI%2FUX
+  http://localhost:3000/?service=UI%2FUX&service=Web%20Dev
+
 - Unit test cases: The onboarding-schema.test.ts has extensive tests of each and every field, both valid and not valid, edge cases as well as combinations.
 
 - Additionally for testing purposes this code handles the example.com placeholder with a mock response (1-second delay). That means, The function checks if the endpoint includes example.com. If true, it simulates a successful response with a 1-second delay using setTimeout, returning a mock ApiResponse.

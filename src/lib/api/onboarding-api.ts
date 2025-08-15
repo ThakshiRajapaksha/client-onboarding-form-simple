@@ -53,11 +53,19 @@ const getErrorMessage = (status: number, errorText: string): string => {
   }
 };
 
+/**
+ * Submits the onboarding form data to the external API.
+ * Handles both success and error responses.
+ *
+ * @param data - The form data to submit
+ * @returns A promise that resolves to an ApiResponse object
+ */
 export async function submitOnboardingForm(
   data: unknown
 ): Promise<ApiResponse> {
-  const endpoint = process.env.NEXT_PUBLIC_ONBOARD_URL;
+  const endpoint = process.env.NEXT_PUBLIC_ONBOARD_URL; // Load external API endpoint
 
+  // If endpoint is not set
   if (!endpoint) {
     return {
       success: false,
@@ -65,7 +73,7 @@ export async function submitOnboardingForm(
     };
   }
 
-  // Handle the example.com placeholder endpoint
+  // Handle the example.com placeholder endpoint - JUST FOR TESTING
   if (endpoint.includes("example.com")) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const formData = data as OnboardingFormData;
@@ -83,6 +91,7 @@ export async function submitOnboardingForm(
     };
   }
 
+  // Submit the form data to the external API
   try {
     const res = await fetch(endpoint, {
       method: "POST",

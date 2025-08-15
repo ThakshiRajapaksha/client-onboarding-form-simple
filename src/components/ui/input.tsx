@@ -1,20 +1,21 @@
+// components/ui/input.tsx
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
+  isRequired?: boolean; // New prop for red star
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className, id, ...props }, ref) => {
+  ({ label, error, className, id, isRequired, ...props }, ref) => {
     const inputId = id || label.toLowerCase().replace(/\s+/g, "-");
 
     return (
       <div className="space-y-2">
         <label htmlFor={inputId} className="text-sm font-medium text-gray-700">
-          {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
+          {label} {isRequired && <span className="text-red-500 ml-1">*</span>}
         </label>
         <input
           ref={ref}

@@ -16,7 +16,7 @@ export function getQueryParam(param: string): string | null {
 export function parseServicesFromQuery(): string[] {
   if (typeof window === "undefined") return [];
   const urlParams = new URLSearchParams(window.location.search);
-  const servicesFromQuery = urlParams.getAll("service");
+  const servicesFromQuery = urlParams.getAll("service"); // Multiple services can be selected
 
   if (servicesFromQuery.length === 0) return [];
 

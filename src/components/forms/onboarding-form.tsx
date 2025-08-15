@@ -43,6 +43,7 @@ export const OnboardingForm: React.FC = () => {
     }
   }, [setValue]);
 
+  // Use On Submit to post data from the form
   const onSubmit = async (data: OnboardingFormData) => {
     const formData = {
       ...data,
@@ -55,6 +56,7 @@ export const OnboardingForm: React.FC = () => {
     try {
       const result = await submitOnboardingForm(formData);
 
+      // For success results
       if (result.success) {
         reset();
         setShowSuccess(true);
@@ -67,7 +69,7 @@ export const OnboardingForm: React.FC = () => {
           typeof formData.budgetUsd !== "number" ||
           isNaN(formData.budgetUsd)
         ) {
-          delete filteredData.budgetUsd;
+          delete filteredData.budgetUsd; // remove null budget field value - NaN
         }
         setSubmitResult({
           success: true,
@@ -99,7 +101,7 @@ export const OnboardingForm: React.FC = () => {
         Client Onboarding Form
       </h1>
 
-      {/* Small Success Alert */}
+      {/* Success Alert */}
       {showSuccess && (
         <div className="mb-4 p-3 rounded-md success-message text-sm">
           Successfully submitted the onboarding form!
@@ -122,6 +124,9 @@ export const OnboardingForm: React.FC = () => {
                 {submitResult.data.companyName}
               </p>
               <p>
+                <strong>Email:</strong> {submitResult.data.email}
+              </p>
+              <p>
                 <strong>Services:</strong>{" "}
                 {Array.isArray(submitResult.data?.services)
                   ? submitResult.data.services.join(", ")
@@ -142,34 +147,38 @@ export const OnboardingForm: React.FC = () => {
         </div>
       )}
 
+      {/* Onboarding Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Full Name */}
         <Input
           id="fullName"
-          label="Full Name *"
+          label="Full Name"
           type="text"
           placeholder="Enter your full name"
           error={errors.fullName?.message}
+          isRequired
           {...register("fullName")}
         />
 
         {/* Email */}
         <Input
           id="email"
-          label="Email Address *"
+          label="Email Address"
           type="email"
           placeholder="Enter your email address"
           error={errors.email?.message}
+          isRequired
           {...register("email")}
         />
 
         {/* Company Name */}
         <Input
           id="companyName"
-          label="Company Name *"
+          label="Company Name"
           type="text"
           placeholder="Enter your company name"
           error={errors.companyName?.message}
+          isRequired
           {...register("companyName")}
         />
 
@@ -213,10 +222,11 @@ export const OnboardingForm: React.FC = () => {
         {/* Project Start Date */}
         <Input
           id="projectStartDate"
-          label="Project Start Date *"
+          label="Project Start Date"
           type="date"
           min={getTodayString()}
           error={errors.projectStartDate?.message}
+          isRequired
           {...register("projectStartDate")}
         />
 
