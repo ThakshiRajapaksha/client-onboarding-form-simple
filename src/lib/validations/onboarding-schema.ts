@@ -15,8 +15,9 @@ export const onboardingSchema = z.object({
     ),
 
   email: z
-    .email("Please enter a valid email address")
-    .min(1, "Email is required"),
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address"),
 
   companyName: z
     .string()
@@ -37,10 +38,12 @@ export const onboardingSchema = z.object({
     .or(z.nan()),
 
   projectStartDate: z.string().refine((date) => {
+    if (!date) return false;
     const selectedDate = new Date(date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return selectedDate >= today;
+    selectedDate.setHours(0, 0, 0, 0);
+    return !isNaN(selectedDate.getTime()) && selectedDate >= today;
   }, "Project start date must be today or later"),
 
   acceptTerms: z

@@ -8,19 +8,16 @@ import {
   OnboardingFormData,
   SERVICE_OPTIONS,
 } from "@/lib/validations/onboarding-schema";
-import {
-  submitOnboardingForm,
-  OnboardingApiResponse,
-} from "@/lib/api/onboarding-api";
+import { ApiResponse } from "@/types/onboarding-data";
 import Input from "@/components/ui/input";
 import Checkbox from "@/components/ui/checkbox";
 import Button from "@/components/ui/button";
 import { parseServicesFromQuery } from "@/lib/utils";
+import { submitOnboardingForm } from "@/lib/api/onboarding-api";
 
 export const OnboardingForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitResult, setSubmitResult] =
-    useState<OnboardingApiResponse | null>(null);
+  const [submitResult, setSubmitResult] = useState<ApiResponse | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const {
@@ -46,6 +43,7 @@ export const OnboardingForm: React.FC = () => {
     }
   }, [setValue]);
 
+  // Use On Submit to post data from the form
   const onSubmit = async (data: OnboardingFormData) => {
     const formData = {
       ...data,
@@ -57,12 +55,30 @@ export const OnboardingForm: React.FC = () => {
 
     try {
       const result = await submitOnboardingForm(formData);
-      setSubmitResult(result);
 
+      // For success results
       if (result.success) {
         reset();
         setShowSuccess(true);
+        // Filter out invalid budgetUsd
+        const filteredData = {
+          ...formData,
+          projectStartDate: new Date(formData.projectStartDate),
+        };
+        if (
+          typeof formData.budgetUsd !== "number" ||
+          isNaN(formData.budgetUsd)
+        ) {
+          delete filteredData.budgetUsd; // remove null budget field value - NaN
+        }
+        setSubmitResult({
+          success: true,
+          message: "Form submitted successfully!",
+          data: filteredData,
+        });
         setTimeout(() => setShowSuccess(false), 3000);
+      } else {
+        setSubmitResult(result);
       }
     } catch {
       setSubmitResult({
@@ -87,7 +103,7 @@ export const OnboardingForm: React.FC = () => {
 
       {/* Success Alert */}
       {showSuccess && (
-        <div className="mb-4 p-3 rounded-md bg-green-50 border border-green-200 text-green-800 text-sm">
+        <div className="mb-4 p-3 rounded-md success-message text-sm">
           Successfully submitted the onboarding form!
         </div>
       )}
@@ -96,9 +112,7 @@ export const OnboardingForm: React.FC = () => {
       {submitResult && !showSuccess && (
         <div
           className={`mb-6 p-4 rounded-md ${
-            submitResult.success
-              ? "bg-green-50 border border-green-200 text-green-800"
-              : "bg-red-50 border border-red-200 text-red-800"
+            submitResult.success ? "success-message" : "error-message"
           }`}
           role="alert"
         >
@@ -110,8 +124,13 @@ export const OnboardingForm: React.FC = () => {
                 {submitResult.data.companyName}
               </p>
               <p>
+                <strong>Email:</strong> {submitResult.data.email}
+              </p>
+              <p>
                 <strong>Services:</strong>{" "}
-                {submitResult.data.services.join(", ")}
+                {Array.isArray(submitResult.data?.services)
+                  ? submitResult.data.services.join(", ")
+                  : "No services provided"}
               </p>
               {submitResult.data.budgetUsd && (
                 <p>
@@ -128,34 +147,38 @@ export const OnboardingForm: React.FC = () => {
         </div>
       )}
 
+      {/* Onboarding Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Full Name */}
         <Input
           id="fullName"
-          label="Full Name *"
+          label="Full Name"
           type="text"
           placeholder="Enter your full name"
           error={errors.fullName?.message}
+          isRequired
           {...register("fullName")}
         />
 
         {/* Email */}
         <Input
           id="email"
-          label="Email Address *"
+          label="Email Address"
           type="email"
           placeholder="Enter your email address"
           error={errors.email?.message}
+          isRequired
           {...register("email")}
         />
 
         {/* Company Name */}
         <Input
           id="companyName"
-          label="Company Name *"
+          label="Company Name"
           type="text"
           placeholder="Enter your company name"
           error={errors.companyName?.message}
+          isRequired
           {...register("companyName")}
         />
 
@@ -199,10 +222,11 @@ export const OnboardingForm: React.FC = () => {
         {/* Project Start Date */}
         <Input
           id="projectStartDate"
-          label="Project Start Date *"
+          label="Project Start Date"
           type="date"
           min={getTodayString()}
           error={errors.projectStartDate?.message}
+          isRequired
           {...register("projectStartDate")}
         />
 
