@@ -38,6 +38,10 @@ Open http://localhost:3000 in your browser to view the form.
 ```bash
 npm run test
 ```
+or 
+```bash
+npx jest
+```
 
 ## React Hook Form + Zod Integration
 
