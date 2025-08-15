@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { SERVICE_OPTIONS } from "./validations/onboarding-schema";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -13,11 +14,23 @@ export function getQueryParam(param: string): string | null {
 }
 
 export function parseServicesFromQuery(): string[] {
-  const services = getQueryParam("service");
-  if (!services) return [];
+  if (typeof window === "undefined") return [];
+  const urlParams = new URLSearchParams(window.location.search);
+  const servicesFromQuery = urlParams.getAll("service");
+
+  if (servicesFromQuery.length === 0) return [];
 
   try {
-    return decodeURIComponent(services).split(",").filter(Boolean);
+    const allServices = servicesFromQuery.flatMap((service) =>
+      decodeURIComponent(service)
+        .split(",")
+        .map((s) => s.trim())
+    );
+    return allServices.filter(
+      (service) =>
+        service &&
+        SERVICE_OPTIONS.includes(service as (typeof SERVICE_OPTIONS)[number])
+    );
   } catch {
     return [];
   }
