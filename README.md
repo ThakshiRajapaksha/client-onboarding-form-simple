@@ -74,7 +74,7 @@ defaultValues: { services: [], acceptTerms: false },
 ## Additional notes
 
 - Pre-fill from Query Params: The parseServicesFromQuery in utils.ts reading the service query param, decodes it and splits into an array.
-  The utilization of useEffect in onboarding-form.tsx is in setting values in the services field with valid values by the setValue.
+  The utilization of useEffect in onboarding-form.tsx. is in setting values in the services field with valid values by the setValue.
   This fulfills the need to pre-fill through query params.
 
   ex:
@@ -83,11 +83,14 @@ defaultValues: { services: [], acceptTerms: false },
 
 - Unit test cases: The onboarding-schema.test.ts has extensive tests of each and every field, both valid and not valid, edge cases as well as combinations.
 
-- Additionally for testing purposes this code handles the example.com placeholder with a mock response (1-second delay). That means, The function checks if the endpoint includes example.com. If true, it simulates a successful response with a 1-second delay using setTimeout, returning a mock ApiResponse.
-
 - Keyboard navigable key :
   Tab - Go down
-  Shift+ Tab - Go Up
-  Space - Select check box , date picker
+  Shift+Tab - Go Up
+  Space - Select check box, date picker
   UP ARROW - Increase Budget
   DOWN ARROW - Decrease Budget
+
+
+## Assumption
+- Additionally, for testing purposes, this code handles the example.com placeholder with a mock response (1-second delay). That means, the function checks if the endpoint includes example.com. If true, it simulates a successful response with a 1-second delay using setTimeout, returning a mock ApiResponse.
+
